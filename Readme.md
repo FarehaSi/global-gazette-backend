@@ -21,13 +21,19 @@ cd backend/
 ```bash
 python3 -m venv venv 
 ```
-    - Activating the Virtual Environment
-        To activate the virtual environment, follow the instructions below based on your operating system:
-        . Windows
-        ```bash
-        venv\Scripts\activate
-        ```
-        . Mac and Linux
-        ```bash
-        source venv/bin/activate
-        ```
+#### Activating the Virtual Environment
+To activate the virtual environment, follow the instructions below based on your operating system:
+. Windows
+```bash
+venv\Scripts\activate
+```
+. Mac and Linux
+```bash
+source venv/bin/activate
+```
+### 3. Installing Dependencies
+To install the dependencies for this project, use pip with the provided requirements.txt file:
+```bash
+pip install -r requirements.txt
+```
+This will install all the required dependencies for the project. If you encounter any errors during the installation process, ensure you resolve them before proceeding.
