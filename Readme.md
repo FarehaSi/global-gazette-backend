@@ -36,4 +36,14 @@ To install the dependencies for this project, use pip with the provided requirem
 ```bash
 pip install -r requirements.txt
 ```
-This will install all the required dependencies for the project. If you encounter any errors during the installation process, ensure you resolve them before proceeding.
+This will install all the required dependencies for the project.
+
+### 4. Run Migrations
+```bash
+python manage.py migrate
+```
+### 5. Run the Development Server
+```bash
+python manage.py runserver
+```
+You should now be able to access the development server at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
