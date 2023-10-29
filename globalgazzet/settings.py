@@ -95,12 +95,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'gg',
-        'USER': 'muzamil',
+        'USER': 'gg_user',
         'PASSWORD': 'Admin123@',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+
 
 
 # Password validation

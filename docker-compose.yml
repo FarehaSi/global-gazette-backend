@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=gg
+      - POSTGRES_USER=gg_user
+      - POSTGRES_PASSWORD=Admin123@
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=1  # Adjust for production use
+      - DB_HOST=db
+      - DB_NAME=gg
+      - DB_USER=gg_user
+      - DB_PASSWORD=Admin123@
+
+volumes:
+  postgres_data:
