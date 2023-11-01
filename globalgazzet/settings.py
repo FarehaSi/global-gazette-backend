@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'authentication',
     'articles',
-    'authors',
     
 ]
 
@@ -95,7 +94,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'gg',
-        'USER': 'gg_user',
+        'USER': 'postgres',
         'PASSWORD': 'Admin123@',
         'HOST': 'localhost',
         'PORT': '5432',
