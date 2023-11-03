@@ -1,10 +1,14 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, get_user_model
 from .serializers import CustomUserSerializer
+from rest_framework.decorators import api_view, permission_classes
+
+
+CustomUser = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
     queryset = get_user_model().objects.all()
@@ -70,3 +74,19 @@ class UpdateProfileView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def following_list(request):
+    user = request.user
+    following_users = user.following.all()
+    serializer = CustomUserSerializer(following_users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def followers_list(request):
+    user = request.user
+    user_followers = user.followers.all()
+    serializer = CustomUserSerializer(user_followers, many=True)
+    return Response(serializer.data)
