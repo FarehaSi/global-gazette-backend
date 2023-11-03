@@ -1,4 +1,5 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
+from django.shortcuts import get_object_or_404
 from .models import Reaction, Article, Comment, Category, Tag
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
@@ -199,3 +200,13 @@ class TagRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthenticated]
+
+class LikedArticlesView(generics.ListAPIView):
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        liked_reactions = Reaction.objects.filter(user=user, reaction_type='like')
+        article_ids = liked_reactions.values_list('article', flat=True)
+        return Article.objects.filter(id__in=article_ids)

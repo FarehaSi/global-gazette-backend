@@ -3,11 +3,14 @@ from .views import ArticleListView, ArticleDetailView, UserArticlesListView, Art
 from .views import TagListCreateView, TagRetrieveUpdateDestroyView
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import LikedArticlesView
 
 urlpatterns = [
     path('articles/', ArticleListView.as_view(), name='article-list'),
     path('articles/<int:pk>/', ArticleDetailView.as_view(), name='article-detail'),
     path('user/articles/', UserArticlesListView.as_view(), name='user-articles'),
+    # path('user/articles/liked', UserArticlesListView.as_view(), name='user-articles'),
+    path('articles/liked/', LikedArticlesView.as_view(), name='liked-articles'),
     path('articles/<int:pk>/edit/', ArticleUpdateView.as_view(), name='edit-article'),
     path('articles/<int:pk>/delete/', ArticleDeleteView.as_view(), name='delete-article'),
     path('articles/<int:article_id>/react/<str:reaction_type>/', ReactToArticle.as_view(), name='article-reaction'),
