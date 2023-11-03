@@ -9,6 +9,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAP
 from .serializers import CommentSerializer, CategorySerializer, ArticleSerializer, TagSerializer
 from rest_framework import filters
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 class ArticleListView(generics.ListCreateAPIView):
@@ -34,6 +35,21 @@ class ArticleListView(generics.ListCreateAPIView):
             raise PermissionDenied("You must be logged in to create an article.")
         serializer.save(author=self.request.user)
 
+
+class ArticleSearchView(generics.ListAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title', 'content', 'author__username', 'tags__name', 'category__name']
+    ordering_fields = ['created_at', 'updated_at', 'title']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        username = self.request.query_params.get('username')
+        if username is not None:
+            queryset = queryset.filter(author__username=username)
+        return queryset
 
 
 # view single article 
