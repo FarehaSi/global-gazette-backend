@@ -6,9 +6,15 @@ class ArticleSerializer(serializers.ModelSerializer):
     like_count = serializers.SerializerMethodField()
     dislike_count = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    thumbnail = serializers.ImageField(max_length=None, use_url=True)
     class Meta:
         model = Article
-        fields = ['id', 'author', 'title', 'content', 'created_at', 'updated_at', 'like_count', 'dislike_count', 'comment_count']
+        fields = [
+            'id', 'author', 'title', 'content', 'thumbnail', 'category', 'tags', 
+            'created_at', 'updated_at', 'like_count', 'dislike_count', 'comment_count'
+        ]
     
     def get_like_count(self, obj):
         return obj.article_reactions.filter(reaction_type='like').count()

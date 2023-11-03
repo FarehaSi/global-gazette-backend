@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import ArticleListView, ArticleDetailView, UserArticlesListView, ArticleUpdateView, ArticleDeleteView, CommentCreateView, ReactToArticle, CommentUpdateView, CommentDeleteView, ReactToComment, ArticleCommentsListView, CategoryListCreateView, CategoryRetrieveUpdateDestroyView
 from .views import TagListCreateView, TagRetrieveUpdateDestroyView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('articles/', ArticleListView.as_view(), name='article-list'),
@@ -18,4 +20,4 @@ urlpatterns = [
     path('categories/<int:pk>/', CategoryRetrieveUpdateDestroyView.as_view(), name='category-retrieve-update-delete'),
     path('tags/', TagListCreateView.as_view(), name='tag-list-create'),
     path('tags/<int:pk>/', TagRetrieveUpdateDestroyView.as_view(), name='tag-retrieve-update-delete'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

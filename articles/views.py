@@ -6,22 +6,51 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView, UpdateAPIView
 from .serializers import CommentSerializer, CategorySerializer, ArticleSerializer, TagSerializer
+from rest_framework import filters
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 
-# publically available articles
 class ArticleListView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    
+    search_fields = ['title', 'content', 'author__username']
+    ordering_fields = ['created_at', 'updated_at', 'title']
+
+    def get_queryset(self):
+        queryset = Article.objects.all()
+        parser_classes = (MultiPartParser, FormParser, JSONParser)
+        limit = self.request.query_params.get('limit')
+        if limit and limit.isdigit():
+            queryset = queryset[:int(limit)]
+        
+        return queryset
 
     def perform_create(self, serializer):
+        if not self.request.user.is_authenticated:
+            raise PermissionDenied("You must be logged in to create an article.")
         serializer.save(author=self.request.user)
+
+
 
 # view single article 
 class ArticleDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_update(self, serializer):
+        if self.get_object().author != self.request.user:
+            raise PermissionDenied("You don't have permission to edit this article.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            raise PermissionDenied("You don't have permission to delete this article.")
+        instance.delete()
+
 
 # list all user's created articles
 class UserArticlesListView(generics.ListAPIView):

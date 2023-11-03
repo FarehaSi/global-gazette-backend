@@ -24,6 +24,9 @@ class Article(models.Model):
     likes_count = models.PositiveIntegerField(default=0)
     dislikes_count = models.PositiveIntegerField(default=0)
     comments_count = models.PositiveIntegerField(default=0)
+    # thumbnail = models.ImageField(upload_to='article_thumbnails/')
+    # category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    # tags = models.ManyToManyField(Tag)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
