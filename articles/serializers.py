@@ -73,20 +73,31 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class ArticleSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True) 
+    author = UserSerializer(read_only=True)
+    truncated_content = serializers.SerializerMethodField()
     like_count = serializers.SerializerMethodField()
     dislike_count = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
-    category = CategorySerializer(read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
-    thumbnail = serializers.ImageField(max_length=None, use_url=True)
+    category_name = CategorySerializer(source='category', read_only=True)
+    tag_names = TagSerializer(source='tags', many=True, read_only=True)
+    thumbnail = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
     class Meta:
         model = Article
         fields = [
-            'id', 'author', 'title', 'content', 'thumbnail', 'category', 'tags',
-            'created_at', 'updated_at', 'like_count', 'dislike_count', 'comment_count'
+            'id', 'author', 'title', 'truncated_content', 'content', 'thumbnail', 
+            'category_name', 'tag_names', 'created_at', 'updated_at', 
+            'like_count', 'dislike_count', 'comment_count'
         ]
+        extra_kwargs = {
+            'content': {'write_only': True},
+            'truncated_content': {'read_only': True},
+            'category': {'write_only': True},
+            'tags': {'write_only': True},
+        }
+    def get_truncated_content(self, obj):
+        return (obj.content[:100] + '...') if len(obj.content) > 100 else obj.content
+
 
     def get_like_count(self, obj):
         return obj.article_reactions.filter(reaction_type='like').count()
@@ -96,3 +107,16 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     def get_comment_count(self, obj):
         return obj.comments.count()
+
+    def create(self, validated_data):
+        tags_data = validated_data.pop('tags', [])
+        article = Article.objects.create(**validated_data)
+        for tag_data in tags_data:
+            article.tags.add(tag_data)
+        return article
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if 'request' in self.context and self.context['request'].parser_context['kwargs'].get('pk'):
+            ret['content'] = instance.content
+        return ret
