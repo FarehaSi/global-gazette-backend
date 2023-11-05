@@ -101,3 +101,24 @@ def get_user_by_id(request, user_id):
     except CustomUser.DoesNotExist:
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     
+@api_view(['GET'])
+@permission_classes([AllowAny])  # Or [IsAuthenticated] to restrict access
+def get_articles_by_user(request, user_id):
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    articles = Article.objects.filter(author=user)
+    serializer = ArticleSerializer(articles, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  # [IsAuthenticated] 
+def get_user_by_id(request, user_id):
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+        serializer = CustomUserSerializer(user)
+        return Response(serializer.data)
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

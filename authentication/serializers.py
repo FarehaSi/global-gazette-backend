@@ -1,8 +1,13 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from .models import CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+
     class Meta:
-        model = get_user_model()
-        fields = ('id', 'username', 'email', 'password', 'bio', 'profile_picture', 'full_name')
+        model = CustomUser
+        fields = ('id', 'username', 'email', 'bio', 'profile_picture', 'full_name', 'followers_count')
         extra_kwargs = {'password': {'write_only': True}}
+
+    def get_followers_count(self, obj):
+        return obj.followers.count()
