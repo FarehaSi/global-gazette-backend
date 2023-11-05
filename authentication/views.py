@@ -90,3 +90,14 @@ def followers_list(request):
     user_followers = user.followers.all()
     serializer = CustomUserSerializer(user_followers, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  # [IsAuthenticated]
+def get_user_by_id(request, user_id):
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+        serializer = CustomUserSerializer(user)
+        return Response(serializer.data)
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    

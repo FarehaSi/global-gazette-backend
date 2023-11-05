@@ -10,7 +10,10 @@ from .serializers import CommentSerializer, CategorySerializer, ArticleSerialize
 from rest_framework import filters
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.filters import SearchFilter, OrderingFilter
-
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from authentication.models import CustomUser
 
 class ArticleListView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
@@ -226,3 +229,16 @@ class LikedArticlesView(generics.ListAPIView):
         liked_reactions = Reaction.objects.filter(user=user, reaction_type='like')
         article_ids = liked_reactions.values_list('article', flat=True)
         return Article.objects.filter(id__in=article_ids)
+    
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  # [IsAuthenticated] 
+def get_articles_by_user(request, user_id):
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    articles = Article.objects.filter(author=user)
+    serializer = ArticleSerializer(articles, many=True)
+    return Response(serializer.data)
