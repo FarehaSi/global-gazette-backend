@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import ArticleListView, ArticleDetailView, UserArticlesListView, ArticleUpdateView, ArticleDeleteView, CommentCreateView, ReactToArticle, CommentUpdateView, CommentDeleteView, ReactToComment, ArticleCommentsListView, CategoryListCreateView, CategoryRetrieveUpdateDestroyView
 from .views import TagListCreateView, TagRetrieveUpdateDestroyView
-from .views import LikedArticlesView, ArticleSearchView, get_articles_by_user
+from .views import LikedArticlesView, ArticleSearchView, get_articles_by_user, ReplyToCommentView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -17,7 +17,8 @@ urlpatterns = [
     path('articles/<int:article_id>/react/<str:reaction_type>/', ReactToArticle.as_view(), name='article-reaction'),
     path('articles/<int:article_id>/comments/', ArticleCommentsListView.as_view(), name='article-comments-list'),
     path('comments/<int:comment_id>/react/<str:reaction_type>/', ReactToComment.as_view(), name='comment-reaction'),
-    path('articles/<int:article_id>/comments/', CommentCreateView.as_view(), name='create-comment'),
+    path('comments/<int:comment_id>/reply/', ReplyToCommentView.as_view(), name='comment-reaction'),
+    path('articles/<int:article_id>/comment/', CommentCreateView.as_view(), name='create-comment'),
     path('comments/<int:pk>/edit/', CommentUpdateView.as_view(), name='comment-update'),
     path('comments/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
     path('categories/', CategoryListCreateView.as_view(), name='category-list-create'),

@@ -242,3 +242,14 @@ def get_articles_by_user(request, user_id):
     articles = Article.objects.filter(author=user)
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data)
+
+
+class LikedArticlesView(generics.ListAPIView):
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        liked_reactions = Reaction.objects.filter(user=user, reaction_type='like')
+        article_ids = liked_reactions.values_list('article', flat=True)
+        return Article.objects.filter(id__in=article_ids).distinct()
