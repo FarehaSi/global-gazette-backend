@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 ALLOWED_HOSTS = ['https://gg-backend-78d63a43777b.herokuapp.com', 'localhost', '127.0.0.1']
