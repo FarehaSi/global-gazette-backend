@@ -14,6 +14,11 @@ from pathlib import Path
 import dj_database_url
 import os
 
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,16 +27,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-'
+# SECRET_KEY = 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-'
+
+# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+
 
 # DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-ALLOWED_HOSTS = ['https://gg-backend-78d63a43777b.herokuapp.com', 'localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['https://gg-backend-78d63a43777b.herokuapp.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '127.0.0.1']
 
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -61,6 +71,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -148,7 +159,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
