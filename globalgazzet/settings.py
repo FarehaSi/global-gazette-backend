@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+ALLOWED_HOSTS = ['https://gg-backend-78d63a43777b.herokuapp.com', 'localhost', '127.0.0.1']
+
 
 ALLOWED_HOSTS = []
 
@@ -96,10 +102,10 @@ WSGI_APPLICATION = 'globalgazzet.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gg',
-        'USER': 'postgres',
-        'PASSWORD': 'Admin123@',
-        'HOST': 'localhost',
+        'NAME': 'd36514lpii2ga',
+        'USER': 'fwzhcvyjsilsah',
+        'PASSWORD': 'c42f97c8761c532340f104215206b3378de0f2cf2a42c764f1f9f8b21273bf1d',
+        'HOST': 'ec2-3-221-177-27.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -151,3 +157,5 @@ CORS_ALLOW_CREDENTIALS = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
