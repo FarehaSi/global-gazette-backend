@@ -20,6 +20,19 @@ class RegisterView(generics.CreateAPIView):
         user.set_password(user.password)
         user.save(update_fields=["password"])
 
+class RegisterAPIView(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        serializer = CustomUserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            return Response({
+                "user": CustomUserSerializer(user).data,
+                "message": "User Created Successfully.  Now perform Login to get your token",
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
