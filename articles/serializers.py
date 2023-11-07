@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Article, Comment, Reaction, Category, Tag
 from django.shortcuts import get_object_or_404
+from cloudinary.models import CloudinaryField
 
 User = get_user_model()
 
@@ -58,7 +59,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), allow_null=True, required=False)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True, required=False)
     
-    thumbnail = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
+    thumbnail = CloudinaryField('image', folder='article_thumbnails/', null=True, blank=True)
 
     class Meta:
         model = Article
