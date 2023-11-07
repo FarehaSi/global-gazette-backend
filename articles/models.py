@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 
 class Tag(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -17,7 +18,8 @@ class Category(models.Model):
 class Article(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
+    # thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
+    thumbnail = CloudinaryField('image', null=True, blank=True)
     content = models.TextField()
     tags = models.ManyToManyField(Tag, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
