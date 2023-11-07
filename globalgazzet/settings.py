@@ -88,6 +88,14 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = 'globalgazzet.urls'
 
+import cloudinary
+          
+cloudinary.config( 
+  cloud_name = "djnre3b2t", 
+  api_key = "325762311474288", 
+  api_secret = "_0wsFE7VF4-zFGVciGzJIa8fQUM" 
+)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
