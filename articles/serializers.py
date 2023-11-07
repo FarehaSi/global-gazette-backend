@@ -1,30 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Article, Comment, Reaction, Category, Tag
-
-# class ArticleSerializer(serializers.ModelSerializer):
-#     author = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
-#     like_count = serializers.SerializerMethodField()
-#     dislike_count = serializers.SerializerMethodField()
-#     comment_count = serializers.SerializerMethodField()
-#     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-#     tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
-#     thumbnail = serializers.ImageField(max_length=None, use_url=True)
-#     class Meta:
-#         model = Article
-#         fields = [
-#             'id', 'author', 'title', 'content', 'thumbnail', 'category', 'tags', 
-#             'created_at', 'updated_at', 'like_count', 'dislike_count', 'comment_count'
-#         ]
-    
-#     def get_like_count(self, obj):
-#         return obj.article_reactions.filter(reaction_type='like').count()
-
-#     def get_dislike_count(self, obj):
-#         return obj.article_reactions.filter(reaction_type='dislike').count()
-
-#     def get_comment_count(self, obj):
-#         return obj.comments.count()
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -78,22 +55,21 @@ class ArticleSerializer(serializers.ModelSerializer):
     like_count = serializers.SerializerMethodField()
     dislike_count = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
-    category_name = CategorySerializer(source='category', read_only=True)
-    tag_names = TagSerializer(source='tags', many=True, read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), allow_null=True, required=False)
+    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True, required=False)
+    
     thumbnail = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
     class Meta:
         model = Article
         fields = [
-            'id', 'author', 'title', 'truncated_content', 'content', 'thumbnail', 
-            'category_name', 'tag_names', 'created_at', 'updated_at', 
+            'id', 'author', 'title', 'truncated_content', 'content', 'thumbnail',
+            'category', 'tags', 'created_at', 'updated_at',
             'like_count', 'dislike_count', 'comment_count'
         ]
         extra_kwargs = {
             'content': {'write_only': True},
             'truncated_content': {'read_only': True},
-            'category': {'write_only': True},
-            'tags': {'write_only': True},
         }
     def get_truncated_content(self, obj):
         return (obj.content[:100] + '...') if len(obj.content) > 100 else obj.content
@@ -110,13 +86,25 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tags_data = validated_data.pop('tags', [])
+        category_data = validated_data.pop('category', None)
+
         article = Article.objects.create(**validated_data)
-        for tag_data in tags_data:
-            article.tags.add(tag_data)
+
+        if category_data:
+            article.category = category_data
+
+        if tags_data:
+            for tag_data in tags_data:
+                article.tags.add(tag_data)
+
+        article.save()
         return article
     
+
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         if 'request' in self.context and self.context['request'].parser_context['kwargs'].get('pk'):
             ret['content'] = instance.content
         return ret
+    
+

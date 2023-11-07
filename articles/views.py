@@ -14,19 +14,23 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from authentication.models import CustomUser
+from django.db.models import Count
 
 class ArticleListView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     
     search_fields = ['title', 'content', 'author__username']
-    ordering_fields = ['created_at', 'updated_at', 'title']
+    ordering_fields = ['created_at', 'updated_at', 'title', 'category__name', 'tags__name']
 
     def get_queryset(self):
-        queryset = Article.objects.all()
+        # queryset = Article.objects.all()
+        queryset = super().get_queryset()
         parser_classes = (MultiPartParser, FormParser, JSONParser)
+        queryset = queryset.annotate(num_tags=Count('tags')).order_by('-num_tags')
         limit = self.request.query_params.get('limit')
         if limit and limit.isdigit():
             queryset = queryset[:int(limit)]
