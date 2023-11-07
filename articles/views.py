@@ -207,11 +207,12 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
+from .permissions import ReadOnlyOrAuthenticated
 
 class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ReadOnlyOrAuthenticated]
 
 
 class TagListCreateView(generics.ListCreateAPIView):
