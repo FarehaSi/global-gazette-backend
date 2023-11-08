@@ -54,8 +54,18 @@ class ArticleSearchView(generics.ListAPIView):
     def get_queryset(self):
         queryset = super().get_queryset()
         username = self.request.query_params.get('username')
-        if username is not None:
+        category_ids = self.request.query_params.getlist('category_ids')
+        tag_ids = self.request.query_params.getlist('tag_ids')
+
+        if username:
             queryset = queryset.filter(author__username=username)
+
+        if category_ids:
+            queryset = queryset.filter(category__id__in=category_ids)
+
+        if tag_ids:
+            queryset = queryset.filter(tags__id__in=tag_ids).distinct()
+
         return queryset
 
 
@@ -258,3 +268,13 @@ class LikedArticlesView(generics.ListAPIView):
         liked_reactions = Reaction.objects.filter(user=user, reaction_type='like')
         article_ids = liked_reactions.values_list('article', flat=True)
         return Article.objects.filter(id__in=article_ids).distinct()
+    
+
+class UserFollowingArticlesView(ListAPIView):
+    serializer_class = ArticleSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_authors = user.following.all()
+        return Article.objects.filter(author__in=following_authors)

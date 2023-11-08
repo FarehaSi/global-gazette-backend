@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import ArticleListView, ArticleDetailView, UserArticlesListView, ArticleUpdateView, ArticleDeleteView, CommentCreateView, ReactToArticle, CommentUpdateView, CommentDeleteView, ReactToComment, ArticleCommentsListView, CategoryListCreateView, CategoryRetrieveUpdateDestroyView
-from .views import TagListCreateView, TagRetrieveUpdateDestroyView
+from .views import TagListCreateView, TagRetrieveUpdateDestroyView, UserFollowingArticlesView
 from .views import LikedArticlesView, ArticleSearchView, get_articles_by_user, ReplyToCommentView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('articles/', ArticleListView.as_view(), name='article-list'),
     path('articles/search/', ArticleSearchView.as_view(), name='article-search'),
+    path('articles/user/following/', UserFollowingArticlesView.as_view(), name='following-articles'),
     path('articles/<int:pk>/', ArticleDetailView.as_view(), name='article-detail'),
     path('user/articles/', UserArticlesListView.as_view(), name='user-articles'),
     # path('user/articles/liked', UserArticlesListView.as_view(), name='user-articles'),
