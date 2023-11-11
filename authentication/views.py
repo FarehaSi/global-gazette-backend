@@ -104,6 +104,7 @@ def followers_list(request):
     serializer = CustomUserSerializer(user_followers, many=True)
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 @permission_classes([AllowAny])  # [IsAuthenticated]
 def get_user_by_id(request, user_id):
