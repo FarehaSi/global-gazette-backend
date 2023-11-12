@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, status
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -136,3 +137,10 @@ def get_user_by_id(request, user_id):
         return Response(serializer.data)
     except CustomUser.DoesNotExist:
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+
+class MostFollowedUsersView(ListAPIView):
+    serializer_class = CustomUserSerializer
+
+    def get_queryset(self):
+        return CustomUser.objects.annotate(num_followers=models.Count('followers')).order_by('-num_followers')[:5]

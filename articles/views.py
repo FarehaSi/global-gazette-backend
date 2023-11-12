@@ -294,3 +294,4 @@ class UserArticlesView(ListAPIView):
         queryset = Article.objects.filter(author_id=user_id)
         queryset = queryset.annotate(num_tags=Count('tags')).order_by('-num_tags')
         return queryset
+    

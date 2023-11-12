@@ -4,6 +4,7 @@ from .models import CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
+    num_followers = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = CustomUser
