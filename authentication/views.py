@@ -141,6 +141,7 @@ def get_user_by_id(request, user_id):
 
 class MostFollowedUsersView(ListAPIView):
     serializer_class = CustomUserSerializer
+    permission_classes = [AllowAny] 
 
     def get_queryset(self):
         return CustomUser.objects.annotate(num_followers=models.Count('followers')).order_by('-num_followers')[:5]
