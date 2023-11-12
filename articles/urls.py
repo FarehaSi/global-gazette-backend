@@ -26,6 +26,6 @@ urlpatterns = [
     path('categories/<int:pk>/', CategoryRetrieveUpdateDestroyView.as_view(), name='category-retrieve-update-delete'),
     path('tags/', TagListCreateView.as_view(), name='tag-list-create'),
     path('tags/<int:pk>/', TagRetrieveUpdateDestroyView.as_view(), name='tag-retrieve-update-delete'),
-    path('articles/users/<int:user_id>/', get_articles_by_user, name='get-articles-by-user'),
+    # path('articles/users/<int:user_id>/', get_articles_by_user, name='get-articles-by-user'),
     path('articles/users/<int:user_id>/', UserArticlesView.as_view(), name='user-articles'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
