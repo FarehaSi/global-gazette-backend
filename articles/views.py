@@ -282,8 +282,15 @@ class UserFollowingArticlesView(ListAPIView):
 
 class UserArticlesView(ListAPIView):
     serializer_class = ArticleSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    
+    search_fields = ['title', 'content', 'author__username']
+    ordering_fields = ['created_at', 'updated_at', 'title', 'category__name', 'tags__name']
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        return Article.objects.filter(author_id=user_id)
+        queryset = Article.objects.filter(author_id=user_id)
+        queryset = queryset.annotate(num_tags=Count('tags')).order_by('-num_tags')
+        return queryset
