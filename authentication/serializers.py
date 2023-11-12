@@ -8,7 +8,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'password', 'bio', 'profile_picture', 'full_name', 'followers_count')
+        fields = ('id', 'username', 'email', 'password', 'bio', 'profile_picture', 'full_name', 'followers_count', 'num_followers')
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_followers_count(self, obj):
