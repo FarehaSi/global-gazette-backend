@@ -278,3 +278,12 @@ class UserFollowingArticlesView(ListAPIView):
         user = self.request.user
         following_authors = user.following.all()
         return Article.objects.filter(author__in=following_authors)
+    
+
+class UserArticlesView(ListAPIView):
+    serializer_class = ArticleSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Article.objects.filter(author_id=user_id)

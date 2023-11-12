@@ -107,5 +107,3 @@ class ArticleSerializer(serializers.ModelSerializer):
         if 'request' in self.context and self.context['request'].parser_context['kwargs'].get('pk'):
             ret['content'] = instance.content
         return ret
-    
-
