@@ -11,6 +11,6 @@ urlpatterns = [
     path('me/update', UpdateProfileView.as_view(), name='update-profile'),
     path('me/following/', following_list, name='following-list'),
     path('me/followers/', followers_list, name='followers-list'),
-    path('users/<int:user_id>/', get_user_by_id, name='get-user-by-id'),
     path('users/most-followed/', MostFollowedUsersView.as_view(), name='most-followed-users'),
-]
+    path('users/<int:user_id>/', get_user_by_id, name='get-user-by-id'),
+    ]
