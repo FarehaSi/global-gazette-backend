@@ -15,6 +15,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from authentication.models import CustomUser
 from django.db.models import Count
+from django_filters.rest_framework import DjangoFilterBackend
 
 class ArticleListView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
@@ -45,7 +46,7 @@ class ArticleSearchView(generics.ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [SearchFilter, OrderingFilter]
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     search_fields = ['title', 'content', 'author__username', 'tags__name', 'category__name']
     ordering_fields = ['created_at', 'updated_at', 'title']
 
@@ -63,6 +64,8 @@ class ArticleSearchView(generics.ListAPIView):
 
         if tag_ids:
             queryset = queryset.filter(tags__id__in=tag_ids).distinct()
+
+        queryset = queryset.order_by('-created_at')
 
         return queryset
 
