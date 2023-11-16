@@ -54,6 +54,8 @@ class MeView(APIView):
         return Response(serializer.data)
 
 class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, user_id):
         try:
             user_to_follow = CustomUser.objects.get(pk=user_id)
@@ -63,7 +65,7 @@ class FollowUserView(APIView):
         if request.user == user_to_follow:
             return Response({'detail': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        request.user.followers.add(user_to_follow)
+        request.user.following.add(user_to_follow)
         return Response({'detail': f'You are now following {user_to_follow.username}.'})
 
     def delete(self, request, user_id):
@@ -72,10 +74,8 @@ class FollowUserView(APIView):
         except CustomUser.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        request.user.followers.remove(user_to_unfollow)
+        request.user.following.remove(user_to_unfollow)
         return Response({'detail': f'You have unfollowed {user_to_unfollow.username}.'})
-
-
 class UpdateProfileView(generics.UpdateAPIView):
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
