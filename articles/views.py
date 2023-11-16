@@ -27,10 +27,9 @@ class ArticleListView(generics.ListCreateAPIView):
     ordering_fields = ['created_at', 'updated_at', 'title', 'category__name', 'tags__name']
 
     def get_queryset(self):
-        # queryset = Article.objects.all()
         queryset = super().get_queryset()
-        parser_classes = (MultiPartParser, FormParser, JSONParser)
-        queryset = queryset.annotate(num_tags=Count('tags')).order_by('-num_tags')
+        # Order by creation date, newest first
+        queryset = queryset.order_by('-created_at')
         limit = self.request.query_params.get('limit')
         if limit and limit.isdigit():
             queryset = queryset[:int(limit)]
@@ -41,7 +40,6 @@ class ArticleListView(generics.ListCreateAPIView):
         if not self.request.user.is_authenticated:
             raise PermissionDenied("You must be logged in to create an article.")
         serializer.save(author=self.request.user)
-
 
 class ArticleSearchView(generics.ListAPIView):
     queryset = Article.objects.all()
