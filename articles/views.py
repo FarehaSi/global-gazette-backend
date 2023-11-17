@@ -216,6 +216,16 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filterset_fields = ['name', 'description']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name', 'description']
+    
+    def get_queryset(self):
+        queryset = Category.objects.all()
+        no_pagination = self.request.query_params.get('no_pagination', None)
+        if no_pagination is not None:
+            self.pagination_class = None
+        return queryset
 
 
 from .permissions import ReadOnlyOrAuthenticated
@@ -230,6 +240,15 @@ class TagListCreateView(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name']
+
+    def get_queryset(self):
+        queryset = Tag.objects.all()
+        no_pagination = self.request.query_params.get('no_pagination', None)
+        if no_pagination is not None:
+            self.pagination_class = None
+        return queryset
 
 class TagRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
