@@ -253,7 +253,7 @@ class TagListCreateView(generics.ListCreateAPIView):
 class TagRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class LikedArticlesView(generics.ListAPIView):
     serializer_class = ArticleSerializer
