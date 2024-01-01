@@ -28,8 +28,9 @@ class RegisterAPIView(APIView):
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
+            response_serializer = CustomUserSerializer(user, context={'request': request})
             return Response({
-                "user": CustomUserSerializer(user).data,
+                "user": response_serializer.data,
                 "message": "User Created Successfully.  Now perform Login to get your token",
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -50,7 +51,7 @@ class LoginView(APIView):
 
 class MeView(APIView):
     def get(self, request):
-        serializer = CustomUserSerializer(request.user)
+        serializer = CustomUserSerializer(request.user, context={'request': request})
         return Response(serializer.data)
 
 class FollowUserView(APIView):
@@ -95,7 +96,7 @@ class UpdateProfileView(generics.UpdateAPIView):
 def following_list(request):
     user = request.user
     following_users = user.following.all()
-    serializer = CustomUserSerializer(following_users, many=True)
+    serializer = CustomUserSerializer(following_users, many=True, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -103,7 +104,7 @@ def following_list(request):
 def followers_list(request):
     user = request.user
     user_followers = user.followers.all()
-    serializer = CustomUserSerializer(user_followers, many=True)
+    serializer = CustomUserSerializer(user_followers, many=True, context={'request': request})
     return Response(serializer.data)
 
 
@@ -112,7 +113,7 @@ def followers_list(request):
 def get_user_by_id(request, user_id):
     try:
         user = CustomUser.objects.get(pk=user_id)
-        serializer = CustomUserSerializer(user)
+        serializer = CustomUserSerializer(user, context={'request': request})
         return Response(serializer.data)
     except CustomUser.DoesNotExist:
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -130,11 +131,11 @@ def get_articles_by_user(request, user_id):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([AllowAny])  # [IsAuthenticated] 
+@permission_classes([AllowAny])  # Or [IsAuthenticated] to restrict access
 def get_user_by_id(request, user_id):
     try:
         user = CustomUser.objects.get(pk=user_id)
-        serializer = CustomUserSerializer(user)
+        serializer = CustomUserSerializer(user, context={'request': request})
         return Response(serializer.data)
     except CustomUser.DoesNotExist:
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -146,3 +147,21 @@ class MostFollowedUsersView(ListAPIView):
 
     def get_queryset(self):
         return CustomUser.objects.annotate(num_followers=models.Count('followers')).order_by('-num_followers')[:5]
+
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        try:
+            user_to_unfollow = CustomUser.objects.get(pk=user_id)
+        except CustomUser.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user == user_to_unfollow:
+            return Response({'detail': 'You cannot unfollow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.user.following.filter(pk=user_id).exists():
+            request.user.following.remove(user_to_unfollow)
+            return Response({'detail': f'You have unfollowed {user_to_unfollow.username}.'})
+        else:
+            return Response({'detail': 'You are not following this user.'}, status=status.HTTP_400_BAD_REQUEST)
