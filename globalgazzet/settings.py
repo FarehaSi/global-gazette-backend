@@ -14,10 +14,6 @@ from pathlib import Path
 import dj_database_url
 import os
 
-# DATABASES = {
-#     'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
-# }
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,17 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-'
-
-# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-$m56xff$iycl#9**ipnx1cy3#kk^=+xcz16$gre-h#r)$p=ei-')
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-
-# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-# ALLOWED_HOSTS = ['https://gg-backend-78d63a43777b.herokuapp.com', 'localhost', '127.0.0.1']
 ALLOWED_HOSTS = ['.herokuapp.com', 'localhost', '127.0.0.1']
 
 
@@ -112,14 +100,7 @@ WSGI_APPLICATION = 'globalgazzet.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd36514lpii2ga',
-        'USER': 'fwzhcvyjsilsah',
-        'PASSWORD': 'c42f97c8761c532340f104215206b3378de0f2cf2a42c764f1f9f8b21273bf1d',
-        'HOST': 'ec2-3-221-177-27.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 
@@ -186,9 +167,9 @@ CSRF_COOKIE_SECURE = True
 import cloudinary
           
 cloudinary.config( 
-  cloud_name = "djnre3b2t", 
-  api_key = "325762311474288", 
-  api_secret = "_0wsFE7VF4-zFGVciGzJIa8fQUM" 
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'), 
+    api_key=os.environ.get('CLOUDINARY_API_KEY'), 
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
