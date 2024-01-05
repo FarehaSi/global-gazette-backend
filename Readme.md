@@ -145,11 +145,6 @@ User Stories for Global Gazette
         - Comments and replies are presented in a structured, threaded format, making it simple for users to track conversations and understand the relationship between different comments.
 
 
-### Database Model
-
-- Database model has been created using Lucid Chart.
-
-![Screenshot of database model](docs/images/Database-ERD.png)
 
 ## Technologies Used
 
