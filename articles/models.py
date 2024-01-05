@@ -2,11 +2,13 @@ from django.db import models
 from django.conf import settings
 from cloudinary.models import CloudinaryField
 
+
 class Tag(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -15,39 +17,50 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Article(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
     title = models.CharField(max_length=200)
-    # thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
     thumbnail = CloudinaryField('image', null=True, blank=True)
     content = models.TextField()
     tags = models.ManyToManyField(Tag, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True
+    )
     likes_count = models.PositiveIntegerField(default=0)
     dislikes_count = models.PositiveIntegerField(default=0)
     comments_count = models.PositiveIntegerField(default=0)
-    # thumbnail = models.ImageField(upload_to='article_thumbnails/')
-    # category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    # tags = models.ManyToManyField(Tag)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.title
+
 
 class Reaction(models.Model):
     REACTION_TYPE_CHOICES = [
         ('like', 'Like'),
         ('dislike', 'Dislike'),
     ]
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    article = models.ForeignKey(Article, related_name="article_reactions", on_delete=models.CASCADE, null=True, blank=True)
-    comment = models.ForeignKey('Comment', related_name="comment_reactions", on_delete=models.CASCADE, null=True, blank=True)
-    reaction_type = models.CharField(max_length=10, choices=REACTION_TYPE_CHOICES)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
+    article = models.ForeignKey(
+        Article, related_name="article_reactions",
+        on_delete=models.CASCADE, null=True, blank=True
+    )
+    comment = models.ForeignKey(
+        'Comment', related_name="comment_reactions",
+        on_delete=models.CASCADE, null=True, blank=True
+    )
+    reaction_type = models.CharField(
+        max_length=10, choices=REACTION_TYPE_CHOICES
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.article:
@@ -62,7 +75,6 @@ class Reaction(models.Model):
             elif self.reaction_type == 'dislike':
                 self.comment.dislikes_count += 1
             self.comment.save()
-
 
     def delete(self, *args, **kwargs):
         if self.article:
@@ -79,10 +91,18 @@ class Reaction(models.Model):
             self.comment.save()
         super().delete(*args, **kwargs)
 
+
 class Comment(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    article = models.ForeignKey(Article, related_name="comments", on_delete=models.CASCADE)
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
+    article = models.ForeignKey(
+        Article, related_name="comments", on_delete=models.CASCADE
+    )
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, related_name='replies',
+        on_delete=models.CASCADE
+    )
     likes_count = models.PositiveIntegerField(default=0)
     dislikes_count = models.PositiveIntegerField(default=0)
     text = models.TextField()
@@ -96,7 +116,7 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
         self.article.comments_count += 1
         self.article.save()
-    
+
     def delete(self, *args, **kwargs):
         self.article.comments_count -= 1
         self.article.save()
