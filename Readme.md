@@ -345,7 +345,6 @@ Authentication is a critical feature of the application, ensuring secure access 
 
 Illustrations and proof of the authentication features:
 
-Screenshot of User Registration ![User registration](docs/images/user-registration.png)  Screenshot of User Login ![User login](docs/images/user-login.png)  Screenshot of Profile Access Post-Login ![Profile access after login](docs/images/profile-access-post-login.png)  Screenshot of Encrypted Password in Database ![Encrypted password in database](docs/images/encrypted-password-database.png)  Screenshot of Token Generation Upon Login ![Token generation on login](docs/images/token-generation-login.png)  Screenshot of Logout Functionality ![Logout functionality](docs/images/logout-functionality.png)
 Bugs
 ----
 
